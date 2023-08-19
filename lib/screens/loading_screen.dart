@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:http/http.dart';
+
+import '../services/location.dart';
 
 class LoadingScreen extends StatefulWidget {
   const LoadingScreen({super.key});
@@ -9,12 +12,33 @@ class LoadingScreen extends StatefulWidget {
 }
 
 class _LoadingScreenState extends State<LoadingScreen> {
+  final Location myLocation = Location();
+  late Response response;
+
   Future<void> getLocation() async {
-    final Position position = await Geolocator.getCurrentPosition(
-      desiredAccuracy: LocationAccuracy.low,
-      timeLimit: const Duration(seconds: 10),
+    try {
+      await myLocation.getCurrentLocation();
+      print('Longitude is ${myLocation.longitude}');
+      print('Latitude is ${myLocation.latitude}');
+      await getData();
+      print(response.body);
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  Future<void> getData() async {
+    final Uri httpsUri = Uri(
+      scheme: 'https',
+      host: 'api.open-meteo.com',
+      path: '/v1/forecast',
+      queryParameters: {'latitude': '${myLocation.latitude}', 'longitude': '${myLocation.longitude}', 'current_weather': 'true'},
     );
-    print('Location: $position');
+
+    print(httpsUri);
+    response = await get(httpsUri);
+
+    print(response.statusCode);
   }
 
   /// Determine the current position of the device.
@@ -67,11 +91,18 @@ class _LoadingScreenState extends State<LoadingScreen> {
         child: ElevatedButton(
           onPressed: () {
             getLocation();
-            _determinePosition(); //Get the current location
+            //getData();
+            // _determinePosition(); //Get the current location
           },
           child: Text('Get Location'),
         ),
       ),
     );
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    //getLocation();
   }
 }
