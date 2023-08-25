@@ -1,3 +1,4 @@
+import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 
 class Location {
@@ -9,22 +10,31 @@ class Location {
   /// (exclusive) to +180 (inclusive).
   late double longitude;
 
+  late String cityName;
+
   Future<void> getCurrentLocation() async {
     try {
       final Position position = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.low,
-        timeLimit: const Duration(seconds: 10),
+        timeLimit: const Duration(seconds: 3),
       );
       //print('Location: $position');
       latitude = position.latitude;
       longitude = position.longitude;
+      cityName = await getCityName();
     } catch (e) {
       print(e);
       //default values - ft sask
       print('Using default values for location');
       latitude = 53.75;
       longitude = -113.25;
+      cityName = "Location Error";
     }
+  }
+
+  Future<String> getCityName() async {
+    List<Placemark> placemarks = await placemarkFromCoordinates(latitude, longitude);
+    return placemarks[0].locality ?? "Locality Error";
   }
 
   /// Determine the current position of the device.
