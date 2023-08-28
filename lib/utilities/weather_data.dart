@@ -10,15 +10,10 @@ class WeatherData {
     decodedData = jsonDecode(data);
     latitude = decodedData["latitude"];
     longitude = decodedData["longitude"];
-    currentTemperature = returnTemp(decodedData[kCurrentWeather][kTemperature]);
+    currentTemperature = decodedData[kCurrentWeather][kTemperature].round();
     weatherCode = decodedData[kCurrentWeather][kWeatherCode];
     windSpeed = decodedData[kCurrentWeather][kWindSpeed];
-    weatherCodeDescription = weatherCodes[weatherCode] ?? kDescriptionNotFound;
-  }
-
-  int returnTemp(double input) {
-    var output = input.round();
-    return output;
+    weatherCodeDescription = weatherCodesAndIcons[weatherCode]?[0] ?? kDescriptionNotFound;
   }
 
   final String cityName;

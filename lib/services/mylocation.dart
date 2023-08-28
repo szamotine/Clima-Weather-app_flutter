@@ -1,7 +1,15 @@
+import 'package:clima/utilities/constants.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 
-class Location {
+class MyLocation {
+  MyLocation() {
+    latitude = kDefaultLatitude;
+    longitude = kDefaultLongitude;
+    cityName = kDefaultCityName;
+  }
+  late Location ll;
+
   /// The latitude of this position in degrees normalized to the interval -90.0
   /// to +90.0 (both inclusive).
   late double latitude;
@@ -12,29 +20,47 @@ class Location {
 
   late String cityName;
 
-  Future<void> getCurrentLocation() async {
+  Future<MyLocation> getCurrentLocation() async {
     try {
       final Position position = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.low,
         timeLimit: const Duration(seconds: 3),
       );
-      //print('Location: $position');
+
       latitude = position.latitude;
       longitude = position.longitude;
-      cityName = await getCityName();
+      cityName = await getCityFromCoordinates();
     } catch (e) {
       print(e);
       //default values - ft sask
-      print('Using default values for location');
-      latitude = 53.75;
-      longitude = -113.25;
-      cityName = "Location Error";
+      print('$kLineBreak Using default values for location $kLineBreak');
+      latitude = kDefaultLatitude;
+      longitude = kDefaultLongitude;
+      cityName = kDefaultCityName;
+    }
+    return this;
+  }
+
+  Future<String> getCityFromCoordinates() async {
+    try {
+      final List<Placemark> placemarks = await placemarkFromCoordinates(latitude, longitude);
+      return placemarks[0].locality ?? "Locality Error";
+    } catch (e) {
+      print('$kLineBreak Error in getCityFromCoordinates: $e $kLineBreak');
+      return Future<String>.error(e.toString());
     }
   }
 
-  Future<String> getCityName() async {
-    List<Placemark> placemarks = await placemarkFromCoordinates(latitude, longitude);
-    return placemarks[0].locality ?? "Locality Error";
+  Future<List<Location>> getCoordinateFromName(String input) async {
+    final List<Location> location;
+    try {
+      // final List<Location> location = await locationFromAddress(input);
+      location = await locationFromAddress(input);
+      return location;
+    } catch (e) {
+      print('$kLineBreak Error in getCoordinateFromName: $e $kLineBreak');
+      return List<Location>.empty();
+    }
   }
 
   /// Determine the current position of the device.

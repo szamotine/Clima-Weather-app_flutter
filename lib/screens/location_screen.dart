@@ -1,4 +1,6 @@
 import 'package:clima/screens/city_screen.dart';
+import 'package:clima/services/mylocation.dart';
+import 'package:clima/services/networking.dart';
 import 'package:clima/services/weather.dart';
 import 'package:clima/utilities/constants.dart';
 import 'package:clima/utilities/weather_data.dart';
@@ -15,9 +17,26 @@ class LocationScreen extends StatefulWidget {
 
 class _LocationScreenState extends State<LocationScreen> {
   WeatherModel weatherModel = WeatherModel();
+  late WeatherData weatherData = widget.weatherData;
+
+  Future<void> updateUI() async {
+    try {
+      final MyLocation location = MyLocation();
+      await location.getCurrentLocation();
+
+      weatherData = WeatherData(await NetworkHelper.getWeatherData(location.latitude, location.longitude), location.cityName);
+      setState(() {
+        // print('Got Coordinates: \nLat: ${location.latitude} \nLong: ${location.longitude}  \nCity: ${location.cityName}');
+      });
+    } catch (e) {
+      // print('Error in updateUI: $e');
+      return Future.error(e);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
+    // print('$kLineBreak Building location screen $kLineBreak');
     return Scaffold(
       body: Container(
         decoration: BoxDecoration(
@@ -37,8 +56,10 @@ class _LocationScreenState extends State<LocationScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
                   FilledButton(
-                    onPressed: () {},
-                    child: Icon(
+                    onPressed: () async {
+                      updateUI();
+                    },
+                    child: const Icon(
                       Icons.near_me,
                       size: 50.0,
                     ),
@@ -67,13 +88,13 @@ class _LocationScreenState extends State<LocationScreen> {
                   children: <Widget>[
                     Expanded(
                       child: Text(
-                        '${widget.weatherData.currentTemperature}°',
+                        '${weatherData.currentTemperature}°',
                         style: kTempTextStyle,
                       ),
                     ),
                     Expanded(
                       child: Text(
-                        weatherCodesIcon[widget.weatherData.weatherCode] ?? '',
+                        weatherCodesAndIcons[weatherData.weatherCode]?[1] ?? '',
                         style: kConditionTextStyle,
                       ),
                     ),
@@ -83,8 +104,8 @@ class _LocationScreenState extends State<LocationScreen> {
               Padding(
                 padding: EdgeInsets.only(right: 15.0),
                 child: Text(
-                  "${weatherModel.getMessage(widget.weatherData.currentTemperature)} in ${widget.weatherData.cityName}!",
-                  textAlign: TextAlign.right,
+                  "${weatherModel.getMessage(weatherData.currentTemperature)} in ${weatherData.cityName}!",
+                  textAlign: TextAlign.left,
                   style: kMessageTextStyle,
                 ),
               ),
