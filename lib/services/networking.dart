@@ -14,7 +14,7 @@ class NetworkHelper {
       scheme: 'https',
       host: 'api.open-meteo.com',
       path: '/v1/forecast',
-      queryParameters: <String, dynamic>{'latitude': '${latitude}', 'longitude': '${longitude}', 'current_weather': 'true'},
+      queryParameters: <String, dynamic>{'latitude': '$latitude', 'longitude': '$longitude', 'current_weather': 'true'},
     );
 
     final Response response = await get(httpsUri);
