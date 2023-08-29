@@ -4,7 +4,7 @@ import 'package:http/http.dart';
 import '../screens/location_screen.dart';
 import '../utilities/constants.dart';
 import '../utilities/weather_data.dart';
-import 'mylocation.dart';
+import 'my_location.dart';
 
 class NetworkHelper {
   late double temp;
@@ -17,30 +17,18 @@ class NetworkHelper {
       queryParameters: <String, dynamic>{'latitude': '$latitude', 'longitude': '$longitude', 'current_weather': 'true'},
     );
 
-    final Response response = await get(httpsUri);
-
-    if (response.statusCode == 200) {
-      // final WeatherData wr = WeatherData(response);
-      //  wr.printConditions();
-    } else {
-      // print('Status Code: ${response.statusCode}');
-    }
-    return response;
+    return await get(httpsUri);
   }
 
   static Future<void> runGivenLocation(BuildContext context, MyLocation location) async {
-    // print('$kLineBreak runGivenLocation to ${location.cityName} $kLineBreak');
     try {
       if (location.cityName == kDefaultCityName && location.latitude == kDefaultLatitude && location.longitude == kDefaultLongitude) {
-        // print('$kLineBreak Changing city to current location due to Location Error $kLineBreak');
         location = await NetworkHelper.getCurrentLocation();
       }
       final WeatherData weatherData = await getWeatherDataFromLocation(location);
-
-      // print('$kLineBreak Pushing screen for: ${weatherData.cityName} $kLineBreak');
       loadLocationScreen(context, weatherData);
     } catch (e) {
-      // print('Error in runGivenLocation: $e');
+      return Future<void>.error('Error in runGivenLocation: $e');
     }
   }
 

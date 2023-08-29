@@ -1,4 +1,4 @@
-import 'package:clima/services/mylocation.dart';
+import 'package:clima/services/my_location.dart';
 import 'package:clima/utilities/constants.dart';
 import 'package:clima/utilities/weather_data.dart';
 import 'package:flutter/material.dart';
@@ -30,7 +30,6 @@ class _CityScreenState extends State<CityScreen> {
       myLocation.longitude = locationList[0].longitude;
       myLocation.cityName = cityName;
     }
-    // print('Got Coordinates: \nLat: ${myLocation.latitude} \nLong: ${myLocation.longitude}  \nCity: ${myLocation.cityName}');
   }
 
   @override

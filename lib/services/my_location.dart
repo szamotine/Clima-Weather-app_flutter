@@ -20,7 +20,7 @@ class MyLocation {
 
   late String cityName;
 
-  Future<MyLocation> getCurrentLocation() async {
+  Future<void> getCurrentLocation() async {
     try {
       final Position position = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.low,
@@ -31,14 +31,11 @@ class MyLocation {
       longitude = position.longitude;
       cityName = await getCityFromCoordinates();
     } catch (e) {
-      print(e);
       //default values - ft sask
-      print('$kLineBreak Using default values for location $kLineBreak');
       latitude = kDefaultLatitude;
       longitude = kDefaultLongitude;
       cityName = kDefaultCityName;
     }
-    return this;
   }
 
   Future<String> getCityFromCoordinates() async {
@@ -46,7 +43,6 @@ class MyLocation {
       final List<Placemark> placemarks = await placemarkFromCoordinates(latitude, longitude);
       return placemarks[0].locality ?? "Locality Error";
     } catch (e) {
-      print('$kLineBreak Error in getCityFromCoordinates: $e $kLineBreak');
       return Future<String>.error(e.toString());
     }
   }
@@ -54,11 +50,9 @@ class MyLocation {
   Future<List<Location>> getCoordinateFromName(String input) async {
     final List<Location> location;
     try {
-      // final List<Location> location = await locationFromAddress(input);
       location = await locationFromAddress(input);
       return location;
     } catch (e) {
-      print('$kLineBreak Error in getCoordinateFromName: $e $kLineBreak');
       return List<Location>.empty();
     }
   }
@@ -102,7 +96,7 @@ class MyLocation {
     // continue accessing the position of the device.
 
     final Position position = await Geolocator.getCurrentPosition();
-    print('Current Location determined: $position');
+
     return position;
   }
 }

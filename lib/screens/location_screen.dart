@@ -1,5 +1,5 @@
 import 'package:clima/screens/city_screen.dart';
-import 'package:clima/services/mylocation.dart';
+import 'package:clima/services/my_location.dart';
 import 'package:clima/services/networking.dart';
 import 'package:clima/services/weather.dart';
 import 'package:clima/utilities/constants.dart';
@@ -25,18 +25,14 @@ class _LocationScreenState extends State<LocationScreen> {
       await location.getCurrentLocation();
 
       weatherData = WeatherData(await NetworkHelper.getWeatherData(location.latitude, location.longitude), location.cityName);
-      setState(() {
-        // print('Got Coordinates: \nLat: ${location.latitude} \nLong: ${location.longitude}  \nCity: ${location.cityName}');
-      });
+      setState(() {});
     } catch (e) {
-      // print('Error in updateUI: $e');
       return Future<void>.error(e);
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    // print('$kLineBreak Building location screen $kLineBreak');
     return Scaffold(
       body: Container(
         decoration: BoxDecoration(
