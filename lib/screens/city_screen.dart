@@ -82,7 +82,7 @@ class _CityScreenState extends State<CityScreen> {
                     ),
                   ),
                   onChanged: (String input) {
-                    cityName = input;
+                    cityName = input.substring(0, 1).toUpperCase() + input.substring(1).toLowerCase();
                   },
                   onSubmitted: (String input) async {
                     await getCoordinates(input);

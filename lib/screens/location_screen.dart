@@ -100,7 +100,7 @@ class _LocationScreenState extends State<LocationScreen> {
               Padding(
                 padding: const EdgeInsets.only(right: 15.0),
                 child: Text(
-                  "${weatherModel.getMessage(weatherData.currentTemperature)} in ${weatherData.cityName}!",
+                  "${weatherData.weatherCodeDescription} in ${weatherData.cityName}!",
                   textAlign: TextAlign.left,
                   style: kMessageTextStyle,
                 ),
